@@ -100,20 +100,117 @@
 -- The Dark Knight Rises  Anne Hathaway         Selina Kyle
 
 -- Turns column mode on but headers off
-.mode column
-.headers off
+--.mode column
+--.headers off
 
 -- Drop existing tables, so you'll start fresh each time this script is run.
 -- TODO!
 
+DROP TABLE IF EXISTS movies;
+DROP TABLE IF EXISTS studios;
+DROP TABLE IF EXISTS actors;
+DROP TABLE IF EXISTS characters;
+DROP TABLE IF EXISTS movie_actor_character_mappings;
+DROP TABLE IF EXISTS roles;
+
 -- Create new tables, according to your domain model
 -- TODO!
+
+CREATE TABLE movies (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title TEXT,
+  year_released TEXT,
+  mpaa_rating TEXT,
+  studio_id INTEGER,
+  FOREIGN KEY (studio_id) REFERENCES studios(id)
+);
+
+CREATE TABLE studios (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT
+);
+
+CREATE TABLE actors (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT
+);
+
+CREATE TABLE characters (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT
+);
+
+CREATE TABLE movie_actor_character_mappings (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  movie_id INTEGER,
+  actor_id INTEGER,
+  character_id INTEGER,
+  FOREIGN KEY (movie_id) REFERENCES movies(id),
+  FOREIGN KEY (actor_id) REFERENCES actors(id),
+  FOREIGN KEY (character_id) REFERENCES characters(id)
+);
 
 -- Insert data into your database that reflects the sample data shown above
 -- Use hard-coded foreign key IDs when necessary
 -- TODO!
 
+INSERT INTO studios (name)
+VALUES 
+  ('Warner Bros.');
+
+INSERT INTO actors (name)
+VALUES 
+  ('Christian Bale'), 
+  ('Michael Caine'), 
+  ('Liam Neeson'), 
+  ('Katie Holmes'), 
+  ('Gary Oldman'), 
+  ('Heath Ledger'), 
+  ('Aaron Eckhart'), 
+  ('Maggie Gyllenhaal'), 
+  ('Tom Hardy'), 
+  ('Joseph Gordon-Levitt'), 
+  ('Anne Hathaway');
+
+INSERT INTO characters (name)
+VALUES 
+  ('Bruce Wayne'), 
+  ('Alfred'), 
+  ("Ra's Al Ghul"), 
+  ('Rachel Dawes'), 
+  ('Commissioner Gordon'), 
+  ('Joker'), 
+  ('Harvey Dent'), 
+  ('Bane'), 
+  ('John Blake'), 
+  ('Selina Kyle');
+
+INSERT INTO movies (title, year_released, mpaa_rating, studio_id)
+VALUES 
+  ('Batman Begins', '2005', 'PG-13', 1),
+  ('The Dark Knight', '2008', 'PG-13', 1),
+  ('The Dark Knight Rises', '2012', 'PG-13', 1);
+
+INSERT INTO movie_actor_character_mappings (movie_id, actor_id, character_id) 
+VALUES 
+  (1, 1, 1), 
+  (1, 2, 2), 
+  (1, 3, 3), 
+  (1, 4, 4), 
+  (1, 5, 5), 
+  (2, 1, 1), 
+  (2, 6, 6), 
+  (2, 7, 7), 
+  (2, 2, 2), 
+  (2, 8, 4), 
+  (3, 1, 1), 
+  (3, 5, 5), 
+  (3, 9, 8), 
+  (3, 10, 9), 
+  (3, 11, 10); 
+
 -- Prints a header for the movies output
+
 .print "Movies"
 .print "======"
 .print ""
@@ -121,12 +218,22 @@
 -- The SQL statement for the movies output
 -- TODO!
 
+SELECT title, year_released, mpaa_rating, studios.name
+FROM movies
+INNER JOIN studios ON movies.studio_id = studios.id;
+
 -- Prints a header for the cast output
+
 .print ""
 .print "Top Cast"
 .print "========"
 .print ""
 
-
 -- The SQL statement for the cast output
 -- TODO!
+
+SELECT movies.title, actors.name, characters.name
+FROM movie_actor_character_mappings
+INNER JOIN movies ON movie_actor_character_mappings.movie_id = movies.id
+INNER JOIN actors ON movie_actor_character_mappings.actor_id = actors.id
+INNER JOIN characters ON movie_actor_character_mappings.character_id = characters.id;
